@@ -1,0 +1,12 @@
+
+.legend {
+    line-height: 18px;
+    color: #555;
+}
+.legend legendStyle {
+    width: 10px;
+    height: 10px;
+    float: left;
+    margin-right: 4px;
+    opacity: 1.0;
+}
