@@ -1,0 +1,19 @@
+POI_NAME,POI_CODE,POI_TYPE,POI_GROUP,POI_ADDRESS,POSTCODE,X-COORDINATES,Y-COORDINATES
+Ang Mo Kio Polyclinic (NHG) ,NHG01,polyclinic,NHG,Block 723 Ang Mo Kio Avenue 8 #01-4136,560723,29543.5969,39364.36
+Bukit Batok Polyclinic (NHG) ,NHG02,polyclinic,NHG,50 Bukit Batok West Avenue 3,659164,18494.5583,37127.4408
+Choa Chu Kang Polyclinic (NHG) ,NHG03,polyclinic,NHG,2 Teck Whye Crescent,688846,18818.3607,40476.0746
+Hougang Polyclinic (NHG) ,NHG04,polyclinic,NHG,89 Hougang Avenue 4,538829,34196.8322,39102.9257
+Jurong Polyclinic (NHG) ,NHG05,polyclinic,NHG,190 Jurong East Avenue 1,609788,16581.6822,36870.9144
+Toa Payoh Polyclinic (NHG) ,NHG06,polyclinic,NHG,Block 2003 Lorong 8 Toa Payoh,319260,30856.8548,35187.4623
+Woodlands Polyclinic (NHG) ,NHG07,polyclinic,NHG,10 Woodlands Street 31,738579,21535.2533,45848.1735
+Yishun Polyclinic (NHG) ,NHG08,polyclinic,NHG,"100, Yishun Central",768826,28429.27,45019.46
+Bedok Polyclinic (Singhealth) ,SGH01,polyclinic,Singhealth,Block 212 Bedok North Street 1 #03-147,460212,38942.1873,34241.5191
+Bukit Merah Polyclinic (Singhealth) ,SGH02,polyclinic,Singhealth,Block 163 Bukit Merah Central #04-3565,150163,26177.1488,29590.5865
+Clementi Polyclinic (NHG) ,SGH03,polyclinic,Singhealth,Block 451 Clementi Avenue 3 #02-307,120451,20449.8492,32753.3202
+Geylang Polyclinic (Singhealth) ,SGH04,polyclinic,Singhealth,21 Geylang East Central,389707,34000.2782,33527.2275
+Marine Parade Polyclinic (Singhealth) ,SGH05,polyclinic,Singhealth,Block 80 Marine Parade #01-792,440080,36298.0154,31619.1953
+Outram Polyclinic (Singhealth) ,SGH06,polyclinic,Singhealth,No.3 Second Hospital Avenue,168937,28556.0663,29087.4945
+Pasir Ris Polyclinic (Singhealth) ,SGH07,polyclinic,Singhealth,1 Pasir Ris Drive 4 #01-11,519457,42053.0648,38930.9775
+Queenstown Polyclinic (Singhealth) ,SGH08,polyclinic,Singhealth,580 Stirling Road,148958,24405.1997,31204.0964
+Sengkang Polyclinic (Singhealth) ,SGH09,polyclinic,Singhealth,2 Sengkang Square #01-06 Sengkang Community Hub,545025,34782.9674,41617.7534
+Tampines Polyclinic (Singhealth) ,SGH10,polyclinic,Singhealth,1 Tampines Street 41,529203,40529.6311,37709.2709

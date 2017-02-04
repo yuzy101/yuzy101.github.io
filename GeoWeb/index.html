@@ -1,0 +1,886 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="initial-scale=1,user-scalable=no,maximum-scale=1,width=device-width">
+        <meta name="mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        
+		<!-- CSS -->
+        <link rel="stylesheet" href="css/leaflet.css" />
+        <link rel="stylesheet" href="css/leaflet.draw.css" />
+        <link rel="stylesheet" href="css/leaflet-geocoder-mapzen.css">
+        <link rel="stylesheet" href="css/leaflet.measurecontrol.css" />
+
+        <link rel="stylesheet" type="text/css" href="css/qgis2web.css">
+        <link rel="stylesheet" href="css/label.css" />
+        <link rel="stylesheet" href="css/legendStyle.css" />
+
+        <link rel="stylesheet" href="css/MarkerCluster.css" />
+        <link rel="stylesheet" href="css/MarkerCluster.Default.css" />
+
+        <link rel="stylesheet" href="css/Control.OSMGeocoder.css" />
+
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">       
+
+        <!-- Libraries -->	
+        <script src="js/Autolinker.min.js"></script>
+
+        <script src="js/leaflet.js"></script>
+        <script src="js/leaflet.draw.js"></script>
+        <script src="js/leaflet-geocoder-mapzen.js"></script>
+        <script src="js/leaflet-hash.js"></script>
+        <script src="js/leaflet.markercluster.js"></script>
+        <script src="js/leaflet.measurecontrol.js"></script>
+
+        <script src="js/L.Control.Pan.js"></script>
+
+        <script src="js/label.js"></script>
+        <script src="js/jquery.js"></script>
+
+        <script src="http://k4r573n.github.io/leaflet-control-osm-geocoder/Control.OSMGeocoder.js"></script>
+
+
+        <!-- Map Style -->
+        <style>
+            html, body, #map {
+                width: 100%;
+                height: 100%;
+                padding: 0;
+                margin: 0;
+            }
+            .ui-control {
+                font:bold 12px/28px Helvetica, sans-serif;
+                text-align:center;
+                position:absolute;
+                top:10px;
+                left:10px;
+                z-index:1000;
+            }
+
+            .ui-pan {
+                margin-top:120px;
+                position:absolute;
+                top:100;
+                left:0;
+                z-index:1000;
+            }
+            .ui-pan .panner {
+                background:#fff;
+                color:#404040;
+                font-size:9px;
+                position:absolute;
+                top:0;
+                left:0;
+                width:28px;
+                height:28px;
+                border:1px solid rgba(0,0,0,0.4);
+                border-radius:3px;
+            }
+            .ui-pan .panner:hover { background-color:#f8f8f8; color:#404040; }
+            .ui-pan .panner.up    { left:28px; }
+            .ui-pan .panner.right { left:58px; top:28px; }
+            .ui-pan .panner.down  { left:28px; top:58px; }
+            .ui-pan .panner.left  { top:28px; }
+        </style>
+
+        <title>Elderly_HealthCare_Services</title>
+    </head>
+    <body>
+        <div class='ui-control'>
+            <div id='pan' class='ui-pan'>
+                <a href='#' id='up' class='panner up'><i class="fa fa-chevron-up"></i></a>
+                <a href='#' id='right' class='panner right'><i class="fa fa-chevron-right"></i></a>
+                <a href='#' id='down' class='panner down'><i class="fa fa-chevron-down"></i></a>
+                <a href='#' id='left' class='panner left'><i class="fa fa-chevron-left"></i></a>
+            </div>
+        </div>
+
+        <div id="map">
+        </div>
+
+        <!--Dataset -->
+        <script src="data/json_MP14SUBZONEWEBPL.js"></script>
+        <script src="data/json_railways.js"></script>
+        <script src="data/json_TrainStations.js"></script>
+		<script src="data/json_BusStopsWithin500m.js"></script>
+        <script src="data/json_NursingHopsital.js"></script>
+        <script src="data/json_NursingHopsitalClusters.js"></script>
+        <script src="data/json_ListOfHospitals.js"></script>
+		<script src="data/json_PoPHosptialsBusStops.js"></script>
+
+
+        <script>
+            var map = L.map('map', {
+                measureControl: true,
+                zoomControl: true, maxZoom: 16, minZoom: 12,
+                scaleControl: true
+            }).fitBounds([[1.26912547462, 103.624515297], [1.49999290989, 104.076401296]]);
+
+            L.control.pan({position: 'topleft'}).addTo(map);
+
+            L.control.scale({
+                options: {
+                    position: 'bottomleft',
+                    maxWidth: 100,
+                    metric: true,
+                    imperial: false,
+                    updateWhenIdle: false
+                }
+            }).addTo(map);
+
+            var hash = new L.Hash(map);
+            var additional_attrib = '<a href="https://github.com/tomchadwin/qgis2web" target ="_blank">qgis2web</a>';
+            var feature_group = new L.featureGroup([]);
+            var bounds_group = new L.featureGroup([]);
+            var raster_group = new L.LayerGroup([]);
+
+            //BaseMap, load a tile layer
+            var basemap0 = L.tileLayer('http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png', {
+                attribution: 'Tiles by <a href="http://mapc.org">MAPC</a>, Data by <a href="http://mass.gov/mgis">MassGIS</a>',
+                maxZoom: 17,
+                minZoom: 9
+            });
+            basemap0.addTo(map);
+
+            var basemap1 = L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: additional_attrib + ' &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors,<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>',
+                maxZoom: 28
+            });
+
+            var basemap2 = L.tileLayer('http://{s}.tile.thunderforest.com/cycle/{z}/{x}/{y}.png', {
+                attribution: additional_attrib + ' &copy; <a href="http://www.opencyclemap.org">OpenCycleMap</a>,&copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors,<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>',
+                maxZoom: 28
+            });
+
+            var layerOrder = new Array();
+
+            layerControl = L.control.layers({}, {}, {collapsed: true});
+
+            //------------------------------------------------------------------------------ Mapping Data ------------------------------------------------------------------------------
+
+            // Clusters for Hospitals
+            function pop_NursingHopsitalClusters(feature, layer) {
+                layer.on({
+                    mouseout: function (e) {
+                        layer.setStyle(doStyleNursingHopsitalClusters(feature));
+                    },
+                    mouseover: highlightFeature,
+                });
+                var popupContent = '<table width="300"><tr><th scope="row">Name</th><td>' + (feature.properties['Name'] !== null ? Autolinker.link(String(feature.properties['Name'])) : '') 
+									+ '</td></tr><tr><th scope="row">Type</th><td>' + (feature.properties['Type'] !== null ? Autolinker.link(String(feature.properties['Type'])) : '') 
+									+ '</td></tr><tr><th scope="row">Website</th><td>' + (feature.properties['Website'] !== null ? Autolinker.link(String(feature.properties['Website'])) : '') 
+									+ '</td></tr><tr><th scope="row">EmergencyTel</th><td>' + (feature.properties['EmergencyT'] !== null ? Autolinker.link(String(feature.properties['EmergencyT'])) : '') 
+									+ '</td></tr><tr><th scope="row">GeneralTel</th><td>' + (feature.properties['GeneralTel'] !== null ? Autolinker.link(String(feature.properties['GeneralTel'])) : '') 
+									+ '</td></tr><tr><th scope="row">Appointment</th><td>' + (feature.properties['Appointmen'] !== null ? Autolinker.link(String(feature.properties['Appointmen'])) : '') 
+									+ '</td></tr><tr><th scope="row">Fax</th><td>' + (feature.properties['Fax'] !== null ? Autolinker.link(String(feature.properties['Fax'])) : '') 
+									+ '</td></tr><tr><th scope="row">BuildingAddr</th><td>' + (feature.properties['BuildingAd'] !== null ? Autolinker.link(String(feature.properties['BuildingAd'])) : '') 
+									+ '</td></tr><tr><th scope="row">StreetAddr</th><td>' + (feature.properties['StreetAddr'] !== null ? Autolinker.link(String(feature.properties['StreetAddr'])) : '') 
+									+ '</td></tr><tr><th scope="row">AddrPostal</th><td>' 
+									+ (feature.properties['AddressPos'] !== null ? Autolinker.link(String(feature.properties['AddressPos'])) : '') + '</td></tr></table>';
+                layer.bindPopup(popupContent);
+            }
+
+            function doStyleNursingHopsitalClusters(feature) {
+                switch (feature.properties.Type) {
+                    case 'Community Hospital':
+                        return {
+                            radius: '12.0',
+                            fillColor: '#229340',
+                            color: '#000000',
+                            weight: 0.0,
+                            opacity: 1.0,
+                            dashArray: '',
+                            fillOpacity: '1.0',
+                        };
+                        break;
+                    case 'General Hospital':
+                        return {
+                            radius: '12.0',
+                            fillColor: '#ca041b',
+                            color: '#000000',
+                            weight: 0.0,
+                            opacity: 1.0,
+                            dashArray: '',
+                            fillOpacity: '1.0',
+                        };
+                        break;
+                    case 'Nursing Home':
+                        return {
+                            radius: '12.0',
+                            fillColor: '#9932b3',
+                            color: '#000000',
+                            weight: 0.0,
+                            opacity: 1.0,
+                            dashArray: '',
+                            fillOpacity: '1.0',
+                        };
+                        break;
+                    case 'Private Nursing Home':
+                        return {
+                            radius: '12.0',
+                            fillColor: '#0c0fc3',
+                            color: '#000000',
+                            weight: 0.0,
+                            opacity: 1.0,
+                            dashArray: '',
+                            fillOpacity: '1.0',
+                        };
+                        break;
+                    case 'Specialist':
+                        return {
+                            radius: '12.0',
+                            fillColor: '#db643f',
+                            color: '#000000',
+                            weight: 0.0,
+                            opacity: 1.0,
+                            dashArray: '',
+                            fillOpacity: '1.0',
+                        };
+                        break;
+                }
+            }
+            var json_NursingHopsitalClustersJSON = new L.geoJson(json_NursingHopsitalClusters, {
+                onEachFeature: pop_NursingHopsitalClusters,
+                pointToLayer: function (feature, latlng) {
+                    return L.circleMarker(latlng, doStyleNursingHopsitalClusters(feature))
+                }
+            });
+            layerOrder[layerOrder.length] = json_NursingHopsitalClustersJSON;
+
+            var cluster_groupNursingHopsitalClustersJSON = new L.MarkerClusterGroup({showCoverageOnHover: true});
+            cluster_groupNursingHopsitalClustersJSON.addLayer(json_NursingHopsitalClustersJSON);
+            map.addLayer(cluster_groupNursingHopsitalClustersJSON);
+
+            layerOrder[layerOrder.length] = cluster_groupNursingHopsitalClustersJSON;
+            bounds_group.addLayer(json_NursingHopsitalClustersJSON);
+            raster_group.addTo(map);
+            feature_group.addTo(map);
+
+			
+            // Railsway
+            function pop_railways(feature, layer) {
+                layer.on({
+                    mouseout: function (e) {
+                        layer.setStyle(doStylerailways(feature));
+                    },
+                    mouseover: highlightFeature,
+                });
+            }
+
+            function doStylerailways(feature) {
+                switch (feature.properties.name) {
+                    case 'Bukit Panjang LRT':
+                        return {
+                            color: '#c1b79b',
+                            weight: '4.0',
+                            dashArray: '',
+                            lineCap: 'square',
+                            lineJoin: 'bevel',
+                            opacity: '1.0',
+                        };
+                        break;
+
+                    case 'Bukit Panjang LRT Depot':
+                        return {
+                            color: '#c8c5bc',
+                            weight: '4.0',
+                            dashArray: '',
+                            lineCap: 'square',
+                            lineJoin: 'bevel',
+                            opacity: '1.0',
+                        };
+                        break;
+
+                    case 'Circle Line Extension':
+                        return {
+                            color: '#ff7f00',
+                            weight: '4.0',
+                            dashArray: '',
+                            lineCap: 'square',
+                            lineJoin: 'bevel',
+                            opacity: '1.0',
+                        };
+                        break;
+
+                    case 'Circle Line MRT':
+                        return {
+                            color: '#ff7f00',
+                            weight: '4.0',
+                            dashArray: '',
+                            lineCap: 'square',
+                            lineJoin: 'bevel',
+                            opacity: '1.0',
+                        };
+                        break;
+
+                    case 'Downtown Line MRT':
+                        return {
+                            color: '#1f34b4',
+                            weight: '4.0',
+                            dashArray: '',
+                            lineCap: 'square',
+                            lineJoin: 'bevel',
+                            opacity: '1.0',
+                        };
+                        break;
+
+                    case 'MRT East West Line (EW)':
+                        return {
+                            color: '#2add30',
+                            weight: '4.0',
+                            dashArray: '',
+                            lineCap: 'square',
+                            lineJoin: 'bevel',
+                            opacity: '1.0',
+                        };
+                        break;
+
+                    case 'North East Line (NE)':
+                        return {
+                            color: '#cc29cc',
+                            weight: '4.0',
+                            dashArray: '',
+                            lineCap: 'square',
+                            lineJoin: 'bevel',
+                            opacity: '1.0',
+                        };
+                        break;
+
+                    case 'North South Line (NS)':
+                        return {
+                            color: '#e31a1c',
+                            weight: '4.0',
+                            dashArray: '',
+                            lineCap: 'square',
+                            lineJoin: 'bevel',
+                            opacity: '1.0',
+                        };
+                        break;
+
+                    case 'Sentosa Express':
+                        return {
+                            color: '#f45bce',
+                            weight: '4.0',
+                            dashArray: '',
+                            lineCap: 'square',
+                            lineJoin: 'bevel',
+                            opacity: '1.0',
+                        };
+                        break;
+                }
+            }
+            
+
+            //Train Stations
+            function pop_TrainStations(feature, layer) {
+                layer.on({
+                    mouseout: function (e) {
+                        layer.setStyle(doStyleTrainStations(feature));
+                    },
+                    mouseover: highlightFeature,
+                });
+                var popupContent = '<table><tr><th scope="row">STATION_NAME:</th><td>' + (feature.properties['STN_NAM'] !== null ? Autolinker.link(String(feature.properties['STN_NAM'])) : '') + '</td></tr></table>';
+                layer.bindPopup(popupContent);
+            }
+
+            var svgTrainStations = L.icon({
+                iconUrl: 'markers/railway=station.svg',
+                iconSize: [16, 16], 
+            });
+
+            function doStyleTrainStations() {
+                return {
+                    icon: svgTrainStations
+                }
+            }
+			
+			
+			//Bus Stops
+            function pop_BusStops(feature, layer) {
+                layer.on({
+                    mouseout: function (e) {
+                        layer.setStyle(doStyleBusStops(feature));
+                    },
+                    mouseover: highlightFeature,
+                });
+				var popupContent = '<table>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['BUS_STOP_N'] !== null ? Autolinker.link(String(feature.properties['BUS_STOP_N'])) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['BUS_ROOF_N'] !== null ? Autolinker.link(String(feature.properties['BUS_ROOF_N'])) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['LOC_DESC'] !== null ? Autolinker.link(String(feature.properties['LOC_DESC'])) : '') + '</td>\
+                    </tr>\
+                </table>';
+				layer.bindPopup(popupContent);              
+            }
+			
+			var svgBus = L.icon({
+                iconUrl: 'markers/transport_bus_stop.svg',
+                iconSize: [16, 16], 
+            });
+
+            function doStyleBusStops() {
+                return {
+                    icon: svgBus
+                }
+            }
+			
+			function doPointToLayerBusStops(feature, latlng) {
+                return L.marker(latlng, doStyleBusStops())
+            }
+			
+            function doPointToLayerTrainStations(feature, latlng) {
+                return L.marker(latlng, doStyleTrainStations())
+            }
+									
+            //MRT Map
+            var mrtMap = new L.layerGroup();
+            L.geoJson(json_railways, {
+                onEachFeature: pop_railways,
+                style: doStylerailways
+            }).addTo(mrtMap);
+
+            L.geoJson(json_TrainStations, {
+                onEachFeature: pop_TrainStations,
+                pointToLayer: doPointToLayerTrainStations
+            }).addTo(mrtMap);
+			
+			
+			//Bus Stops
+			var busStop = new L.layerGroup();
+            L.geoJson(json_BusStopsWithin500m, {
+                onEachFeature: pop_BusStops,
+                pointToLayer: doPointToLayerBusStops
+            }).addTo(busStop);
+			
+			L.geoJson(json_PoPHosptialsBusStops, {
+                onEachFeature: pop_PoPHosptialsBusStops,
+                pointToLayer: doPointToLayerBusStops
+            }).addTo(busStop);
+
+
+            // Population Chloropleth Map
+            function pop_MP14SUBZONEWEBPL(feature, layer) {
+                layer.on({
+                    mouseout: function (e) {
+                        layer.setStyle(doStyleMP14SUBZONEWEBPL(feature));
+
+                    },
+                    mouseover: highlightFeature,
+                });
+               
+                var popupContent = '<table><tr><th scope="row">OBJECTID</th><td>' + (feature.properties['OBJECTID'] !== null ? Autolinker.link(String(feature.properties['OBJECTID'])) : '')
+                        + '</td></tr><tr><th scope="row">SUBZONE_NAME</th><td>' + (feature.properties['SUBZONE_N'] !== null ? Autolinker.link(String(feature.properties['SUBZONE_N'])) : '')
+                        + '</td></tr><tr><th scope="row">REGION_NAME</th><td>' + (feature.properties['REGION_N'] !== null ? Autolinker.link(String(feature.properties['REGION_N'])) : '')
+                        + '</td></tr><tr><th scope="row">TOTAL_POPULATION_2016</th><td>' + (feature.properties['Population_2016_TOTAL_POPULATION'] !== null ? Autolinker.link(String(feature.properties['Population_2016_TOTAL_POPULATION'])) : '')
+                        + '</td></tr><tr><th scope="row">POPULATION_OF_ELDERLY</th><td>' + (feature.properties['Population_2016_ELDERLY_60_ABOVE'] !== null ? Autolinker.link(String(feature.properties['Population_2016_ELDERLY_60_ABOVE'])) : '')
+                        + '</td></tr></table>';
+                layer.bindPopup(popupContent);
+            }
+
+            function doStyleMP14SUBZONEWEBPL(feature) {
+            if (feature.properties['Population_2016_ELDERLY_60_ABOVE'] >= 0.000000 && feature.properties['Population_2016_ELDERLY_60_ABOVE'] <= 1.000000 ) {
+                return {
+                        color: '#000000',
+                        weight: '1.04',
+                        dashArray: '',
+                        lineCap: 'butt',
+                        lineJoin: 'miter',
+                        fillColor: '#ffffff',
+                        opacity: '0.8',
+                        fillOpacity: '0.8',
+                    }
+            }
+            if (feature.properties['Population_2016_ELDERLY_60_ABOVE'] >= 1.000000 && feature.properties['Population_2016_ELDERLY_60_ABOVE'] <= 3560.000000 ) {
+                return {
+                        color: '#000000',
+                        weight: '1.04',
+                        dashArray: '',
+                        lineCap: 'butt',
+                        lineJoin: 'miter',
+                        fillColor: '#d5efcf',
+                        opacity: '0.8',
+                        fillOpacity: '0.8',
+                }
+            }
+            if (feature.properties['Population_2016_ELDERLY_60_ABOVE'] >= 3560.000000 && feature.properties['Population_2016_ELDERLY_60_ABOVE'] <= 5870.000000 ) {
+                return {
+                        color: '#000000',
+                        weight: '1.04',
+                        dashArray: '',
+                        lineCap: 'butt',
+                        lineJoin: 'miter',
+                        fillColor: '#9ed898',
+                        opacity: '0.8',
+                        fillOpacity: '0.8',
+                    }
+            }
+            if (feature.properties['Population_2016_ELDERLY_60_ABOVE'] >= 5870.000000 && feature.properties['Population_2016_ELDERLY_60_ABOVE'] <= 8790.000000 ) {
+                return {
+                        color: '#000000',
+                        weight: '1.04',
+                        dashArray: '',
+                        lineCap: 'butt',
+                        lineJoin: 'miter',
+                        fillColor: '#74c476',
+                        opacity: '0.8',
+                        fillOpacity: '0.8',
+                    }
+            }
+            if (feature.properties['Population_2016_ELDERLY_60_ABOVE'] >= 8790.000000 && feature.properties['Population_2016_ELDERLY_60_ABOVE'] <= 13700.000000 ) {
+                return {
+                        color: '#000000',
+                        weight: '1.04',
+                        dashArray: '',
+                        lineCap: 'butt',
+                        lineJoin: 'miter',
+                        fillColor: '#238b45',
+                        opacity: '0.8',
+                        fillOpacity: '0.8',
+                    }
+            }
+            if (feature.properties['Population_2016_ELDERLY_60_ABOVE'] >= 13700.000000 && feature.properties['Population_2016_ELDERLY_60_ABOVE'] <= 25420.000000 ) {
+                return {
+                        color: '#000000',
+                        weight: '1.04',
+                        dashArray: '',
+                        lineCap: 'butt',
+                        lineJoin: 'miter',
+                        fillColor: '#00441b',
+                        opacity: '0.8',
+                        fillOpacity: '0.8',
+                    }
+            }
+        }
+            var json_MP14SUBZONEWEBPLJSON = new L.geoJson(json_MP14SUBZONEWEBPL, {
+                onEachFeature: pop_MP14SUBZONEWEBPL,
+                style: doStyleMP14SUBZONEWEBPL
+            });
+
+
+            // Highlight region from Population Chloropleth Map based on planning area
+            var highlightLayer;
+            function highlightFeature(e) {
+                highlightLayer = e.target;
+                highlightLayer.setStyle({
+                    fillColor: '#ffff00',
+                    fillOpacity: 1
+                });
+
+                /*if (!L.Browser.ie && !L.Browser.opera) {
+                 highlightLayer.bringToFront();
+                 }*/
+            }
+            L.ImageOverlay.include({
+                getBounds: function () {
+                    return this._bounds;
+                }
+            });
+			
+			bounds_group.addLayer(json_MP14SUBZONEWEBPLJSON);
+			feature_group.addLayer(json_MP14SUBZONEWEBPLJSON);
+			var img_HeatmapAgeDensity1 = 'data/HeatmapAgeDensity1.png';
+			var img_bounds_HeatmapAgeDensity1 = [[1.17524424147,103.609528059],[1.48310431376,104.053060795]];
+			var overlay_HeatmapAgeDensity1 = new L.imageOverlay(img_HeatmapAgeDensity1, img_bounds_HeatmapAgeDensity1);
+			
+			// Bus Stops Within 500m Radius
+			function pop_PoPHosptialsBusStops(feature, layer) {
+            var popupContent = '<table>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['NAME'] !== null ? Autolinker.link(String(feature.properties['Name'])) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['STREET ADDRESS'] !== null ? Autolinker.link(String(feature.properties['StreetAddr'])) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + 'No. of Bus Stop(s): ' + (feature.properties['NUMBER OF BUS STOPS'] !== null ? Autolinker.link(String(feature.properties['NUMPOINTS'])) : '') + '</td>\
+                    </tr>\
+                </table>';
+				layer.bindPopup(popupContent);
+			}
+				
+			function DoStyle_PoPHosptialsBusStops(feature) {
+            if (feature.properties['NUMPOINTS'] >= 0.000000 && feature.properties['NUMPOINTS'] <= 1.000000 ) {
+               return {
+                            radius: '12.0',
+                            fillColor: '#229340',
+                            color: '#000000',
+                            weight: 0.0,
+                            opacity: 1.0,
+                            dashArray: '',
+                            fillOpacity: '0.5',
+                        };
+            }
+            if (feature.properties['NUMPOINTS'] >= 1.000000 && feature.properties['NUMPOINTS'] <= 7.000000 ) {
+                return {
+                            radius: '12.0',
+                            fillColor: '#229340',
+                            color: '#000000',
+                            weight: 0.0,
+                            opacity: 1.0,
+                            dashArray: '',
+                            fillOpacity: '0.5',
+                        };
+            }
+            if (feature.properties['NUMPOINTS'] >= 7.000000 && feature.properties['NUMPOINTS'] <= 11.000000 ) {
+               return {
+                            radius: '12.0',
+                            fillColor: '#229340',
+                            color: '#000000',
+                            weight: 0.0,
+                            opacity: 1.0,
+                            dashArray: '',
+                            fillOpacity: '0.5',
+                        };
+            }
+            if (feature.properties['NUMPOINTS'] >= 11.000000 && feature.properties['NUMPOINTS'] <= 14.000000 ) {
+               return {
+                            radius: '12.0',
+                            fillColor: '#229340',
+                            color: '#000000',
+                            weight: 0.0,
+                            opacity: 1.0,
+                            dashArray: '',
+                            fillOpacity: '0.5',
+                        };
+            }
+            if (feature.properties['NUMPOINTS'] >= 14.000000 && feature.properties['NUMPOINTS'] <= 18.000000 ) {
+                return {
+                            radius: '12.0',
+                            fillColor: '#229340',
+                            color: '#000000',
+                            weight: 0.0,
+                            opacity: 1.0,
+                            dashArray: '',
+                            fillOpacity: '0.5',
+                        };
+            }
+            if (feature.properties['NUMPOINTS'] >= 18.000000 && feature.properties['NUMPOINTS'] <= 25.000000 ) {
+                return {
+                            radius: '12.0',
+                            fillColor: '#229340',
+                            color: '#000000',
+                            weight: 0.0,
+                            opacity: 1.0,
+                            dashArray: '',
+                            fillOpacity: '0.5',
+                        };
+            }
+        }
+		
+		var json_PoPHosptialsBusStopsJSON = new L.geoJson(json_PoPHosptialsBusStops, {
+                onEachFeature: pop_PoPHosptialsBusStops,
+				pointToLayer: function (feature, latlng) {
+                    return L.circleMarker(latlng, DoStyle_PoPHosptialsBusStops(feature))
+                }
+            });
+			
+			//layerOrder[layerOrder.length] = json_PoPHosptialsBusStopsJSON;
+			//map.addLayer(json_PoPHosptialsBusStopsJSON);
+            //bounds_group.addLayer(json_PoPHosptialsBusStopsJSON);
+            //raster_group.addTo(map);
+            //feature_group.addTo(map);
+
+			
+            //Proportional Symbol Map
+            function hospitalPropSize(size) {
+                var radius = size / 50;
+                return {
+                    radius: radius,
+                    fillColor: "#ebb922",
+                    color: "#FFFFFF",
+                    weight: 1,
+                    opacity: 1,
+                    fillOpacity: 0.5   
+                }
+            }
+
+            function pop_ListOfHospitals(feature, layer) {
+   
+                var popupContent = '<table width="300"><tr><th scope="row">ObjectID</th><td>' + (feature.properties['ObjectID'] !== null ? Autolinker.link(String(feature.properties['ObjectID'])) : '')
+                        + '</td></tr><tr><th scope="row">Name</th><td>' + (feature.properties['Name'] !== null ? Autolinker.link(String(feature.properties['Name'])) : '')
+                        + '</td></tr><tr><th scope="row">NoOfBeds</th><td>' + (feature.properties['NoOfBeds'] !== null ? Autolinker.link(String(feature.properties['NoOfBeds'])) : '')
+                        + '</td></tr><tr><th scope="row">HospitalType</th><td>' + (feature.properties['HospitalTy'] !== null ? Autolinker.link(String(feature.properties['HospitalTy'])) : '')
+                        + '</td></tr><tr><th scope="row">Website</th><td>' + (feature.properties['Website'] !== null ? Autolinker.link(String(feature.properties['Website'])) : '')
+                        + '</td></tr><tr><th scope="row">EmergencyTel</th><td>' + (feature.properties['EmergencyT'] !== null ? Autolinker.link(String(feature.properties['EmergencyT'])) : '')
+                        + '</td></tr><tr><th scope="row">GeneralTel</th><td>' + (feature.properties['GeneralTel'] !== null ? Autolinker.link(String(feature.properties['GeneralTel'])) : '')
+                        + '</td></tr><tr><th scope="row">AppointmentTel</th><td>' + (feature.properties['Appointmen'] !== null ? Autolinker.link(String(feature.properties['Appointmen'])) : '')
+                        + '</td></tr><tr><th scope="row">Fax</th><td>' + (feature.properties['Fax'] !== null ? Autolinker.link(String(feature.properties['Fax'])) : '')
+                        + '</td></tr><tr><th scope="row">BuildingAddr</th><td>' + (feature.properties['BuildingAd'] !== null ? Autolinker.link(String(feature.properties['BuildingAd'])) : '')
+                        + '</td></tr><tr><th scope="row">StreetAddr</th><td>' + (feature.properties['StreetAddr'] !== null ? Autolinker.link(String(feature.properties['StreetAddr'])) : '')
+                        + '</td></tr><tr><th scope="row">AddrPostal</th><td>' + (feature.properties['AddressPos'] !== null ? Autolinker.link(String(feature.properties['AddressPos'])) : '')
+                        + '</td></tr></table>';
+                layer.bindPopup(popupContent);
+            }
+
+            var json_ListOfHospitalsJSON = new L.geoJson(json_ListOfHospitals, {
+                onEachFeature: pop_ListOfHospitals,
+                pointToLayer: function (feature, latlng) {
+                    return L.circleMarker(latlng, hospitalPropSize(feature.properties.NoOfBeds))
+                }
+            });
+					
+			
+
+            //-------------------------------------------------------------------------BottomRight of Map (Legend)-------------------------------------------------------------------------
+            var currentLegend;
+
+            //Hospital/NursingHomes Legend 
+            var nurHosClusterLegend = L.control({position: 'bottomright'});
+            nurHosClusterLegend.onAdd = function (map) {
+                var div = L.DomUtil.create('div', 'info legend');
+                div.innerHTML += "<b>Hospital & Care Facilities Legend</b><br/>" +
+                        '<legendStyle style="background:#229340;"></legendStyle>Community Hospital<br/>' +
+                        '<legendStyle style="background:#ca041b;"></legendStyle>General Hospital<br/>' +
+                        '<legendStyle style="background:#9932b3;"></legendStyle>Nursing Home<br/>' +
+                        '<legendStyle style="background:#0c0fc3;"></legendStyle>Private Nursing Home<br/>' +
+                        '<legendStyle style="background:#db643f;"></legendStyle>Specialist';
+                return div;
+            };
+            currentLegend = nurHosClusterLegend;
+            nurHosClusterLegend.addTo(map);
+
+            //Rails Legend 	
+            var railLegend = L.control({position: 'bottomright'});
+            railLegend.onAdd = function (map) {
+                var div = L.DomUtil.create('div', 'info legend');
+                div.innerHTML += "<b>Railways Legend</b><br/>" +
+                        '<legendStyle style="background:#c1b79b;"></legendStyle>Bukit Panjang LRT<br/>' +
+                        '<legendStyle style="background:#ff7f00;"></legendStyle>Circle Line<br/>' +
+                        '<legendStyle style="background:#1f34b4;"></legendStyle>Downtown Line<br/>' +
+                        '<legendStyle style="background:#2add30;"></legendStyle>East West Line (EW)<br/>' +
+                        '<legendStyle style="background:#cc29cc;"></legendStyle>North East Line (NE)<br/>' +
+                        '<legendStyle style="background:#e31a1c;"></legendStyle>North South Line (NS)<br/>' +
+                        '<legendStyle style="background:#f45bce;"></legendStyle>Sentosa Express';
+                return div;
+            };
+			
+			//Bus Legend 	
+            var busLegend = L.control({position: 'bottomright'});
+            busLegend.onAdd = function (map) {
+                var div = L.DomUtil.create('div', 'info legend');
+                div.innerHTML += "<b>Nearby Bus Stops Legend</b><br/>" +
+                        '<legendStyle style="background:#ad0417;"></legendStyle>Bus Stop<br/>';
+                return div;
+            };
+
+            //Population Chloropleth Legend 			
+			var populationLegend = L.control({position: 'bottomleft'});
+            populationLegend.onAdd = function (map) {
+                var div = L.DomUtil.create('div', 'info legend');
+                div.innerHTML += "<b>Population Chloropleth Legend</b><br/>" +
+                        '<legendStyle style="background:#d5efcf;"></legendStyle>1 - 3000<br/>' +
+                        '<legendStyle style="background:#9ed898;"></legendStyle>3000 - 9000<br/>' +
+                        '<legendStyle style="background:#74c476;"></legendStyle>9000 - 15000<br/>' +
+                        '<legendStyle style="background:#238b45;"></legendStyle>15000 - 20000<br/>' +
+                        '<legendStyle style="background:#00441b;"></legendStyle>20000 - 25420<br/>';
+                return div;
+            };
+			currentLegend = populationLegend;
+            populationLegend.addTo(map);
+			
+			var heatmapDensityLegend = L.control({position: 'bottomleft'});
+            heatmapDensityLegend.onAdd = function (map) {
+                var div = L.DomUtil.create('div', 'info legend');
+                div.innerHTML += "<b>Heatmap Age Density Legend</b><br/>" +
+                        '<legendStyle style="background:#ffe7cf;"></legendStyle>1 - 3000<br/>' +
+                        '<legendStyle style="background:#fdbc82;"></legendStyle>3000 - 9000<br/>' +
+                        '<legendStyle style="background:#fd8d3b;"></legendStyle>9000 - 15000<br/>' +
+                        '<legendStyle style="background:#e64c15;"></legendStyle>15000 - 20000<br/>' +
+                        '<legendStyle style="background:#ca041b;"></legendStyle>20000 - 25420<br/>';
+                return div;
+            };
+			
+			
+
+
+            //-------------------------------------------------------------------------UpperRight of Map (Menus)-------------------------------------------------------------------------
+            // Search Bar
+            var geocoder = L.control.geocoder('search-MKZrG6M', {position: 'topright'}).addTo(map);
+
+
+            // Maps/Layers Menu
+            var baseMaps = {'Black & White': basemap0, 'OSM Standard': basemap1, 'Thunderforest Cycle': basemap2};
+            L.control.layers(baseMaps, {'Hospitals & Care Facilities': cluster_groupNursingHopsitalClustersJSON, 'MRT Map': mrtMap, 
+										'Population Chloropleth Map': json_MP14SUBZONEWEBPLJSON, 'Hospital Proportional Area': json_ListOfHospitalsJSON,
+										'Heatmap Age Density': overlay_HeatmapAgeDensity1, 'Nearby Bus Stops (0.5km)': busStop}, {collapsed: true}).addTo(map);
+            map.locate({setView: true, maxZoom: 16});
+
+            //Toggle on legend that belongs to map
+            map.on('overlayadd', function (eventLayer) {
+                if (eventLayer.name === 'Hospitals & Care Facilities') {
+                    this.addControl(nurHosClusterLegend);
+                }
+                else if (eventLayer.name === 'MRT Map') {
+                    this.addControl(railLegend);
+                }
+                else if (eventLayer.name === 'Population Chloropleth Map') {
+                    this.addControl(populationLegend);
+                }
+				else if (eventLayer.name === 'Heatmap Age Density') {
+                    this.addControl(heatmapDensityLegend);
+                }
+				else if (eventLayer.name === 'Nearby Bus Stops (0.5km)') {
+                    this.addControl(busLegend);
+                }				
+            });
+
+            //Toggle off legend that belongs to map
+            map.on('overlayremove', function (eventLayer) {
+                if (eventLayer.name === 'Hospitals & Care Facilities') {
+                    this.removeControl(nurHosClusterLegend);
+                }
+                else if (eventLayer.name === 'MRT Map') {
+                    this.removeControl(railLegend);
+                }
+                else if (eventLayer.name === 'TrainStations') {
+                    this.removeControl(currentLegend);
+                }
+                else if (eventLayer.name === 'Population Chloropleth Map') {
+                    this.removeControl(populationLegend);
+                }
+				else if (eventLayer.name === 'Heatmap Age Density') {
+                    this.removeControl(heatmapDensityLegend);
+                }
+				else if (eventLayer.name === 'Nearby Bus Stops (0.5km)') {
+                    this.removeControl(busLegend);
+                }
+            });
+			
+			
+            // GeoLocation Tracker		
+            function onLocationFound(e) {
+                var radius = e.accuracy / 2;
+                L.marker(e.latlng).addTo(map)
+                        .bindPopup("You are within " + radius + " meters from this point")
+                        .openPopup();
+                L.circle(e.latlng, radius).addTo(map);
+            }
+            map.on('locationfound', onLocationFound);
+
+            //Pan and zoom
+            document.getElementById('left').onclick = function (e) {
+                e.preventDefault();
+                map.panBy([-100, 0]);
+            };
+            document.getElementById('right').onclick = function (e) {
+                e.preventDefault();
+                map.panBy([100, 0]);
+            };
+            document.getElementById('down').onclick = function (e) {
+                e.preventDefault();
+                map.panBy([0, 100]);
+            };
+            document.getElementById('up').onclick = function (e) {
+                e.preventDefault();
+                map.panBy([0, -100]);
+            };
+
+        </script>
+    </body>
+</html>

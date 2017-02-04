@@ -1,0 +1,32 @@
+ObjectID,Name,NoOfBeds,HospitalType,Website,EmergencyTel ,GeneralTel,AppointmentTel,Fax,BuildingAddress,StreetAddress,AddressPostal,X-COORDINATES,Y-COORDINATES
+1,Changi General Hospital (CGH),790,General,http://www.cgh.com.sg/,6850-1680,6788-8833,,6788-0933,,2 Simei Street 3,529889,40906.865,35871.93
+2,Gleneagles Hospital,270,General,http://www.gleneagles.com.sg/,6470-5688,6473-7222,,6475-1832,,6A Napier Rd,258500,26453.3163,32187.2723
+3,Khoo Teck Puat Hospital (KTPH),550,General,http://www.ktph.com.sg/,6602-2828,6555-8000,,6602-3700,,90 Yishun Central,768828,28529.4833,45061.2319
+4,Mount Alvernia Hospital (Mt Alvernia),336,General,http://www.mtalvernia-hospital.org/,6347-6210,6347-6688,,6255-6303,,820 Thomson Rd,574623,28476.4376,35997.6127
+5,National University Hospital (NUH),752,General,http://www.nuh.com.sg/,6772-5000,6779-5555,,6779-5678,,5 Lower Kent Ridge Rd,119074,22367.7383,30704.6314
+6,Ng Teng Fong General Hospital (NTFGH) ,700,General,http://www.juronghealth.com.sg/,6340-8666,6716-2000,6716-2233,6716-5500,,1 Jurong East Street 21,609606,18353.0128,34978.8672
+7,Parkway East Hospital,106,General,http://www.parkwayhealth.com/hospitals/parkway_east_hospital,,6344-7588,,6345-4966,,321 Joo Chiat Place,427990,36395.5561,33041.4195
+8,Raffles Hospital,380,General,http://www.raffleshospital.com/,6311-1555,6311-1111,,6311-2136,,585 North Bridge Rd,188770,30662.6523,31499.3461
+9,Sengkang General Hospital (SKGH),1400,General,,,,,,,1 Anchorvale Street,544835,34567.3729,41970.3198
+10,Singapore General Hospital (SGH),1700,General,http://www.sgh.com.sg/,6321-4311,6222-3322,,6224-9221,,Outram Rd,169608,28451.1971,29230.1837
+11,Tan Tock Seng Hospital (TTSH),0,General,http://www.ttsh.com.sg/,6357-8866,6256-6011,,6252-7282,,11 Jalan Tan Tock Seng,308433,29845.4109,33529.1214
+12,Alexandra Hospital,400,Community,http://www.ah.com.sg/,,6472-2000,,,,378 Alexandra Road,159964,24407.8981,29891.2425
+13,Ang Mo Kio - Thye Hua Kwan Hospital,360,Community,http://www.amkh.com.sg,,6453-8033,,6454-1729,,17 Ang Mo Kio Avenue 9,569766,28762.7106,40692.0738
+14,Bright Vision Hospital,318,Community,http://www.bvh.org.sg/,,6248-5755,,6881-3872,,5 Lorong Napiri,547530,32976.1585,39328.3848
+15,Jurong Community Hospital (JCH),400,Community,http://www.juronghealth.com.sg/,,6716-2000,6716-2233,6716-5500,,1 Jurong East Street 21,609606,18353.0128,34978.8672
+16,Kwong Wai Shiu Hospital And Nursing Home,400,Community,http://www.kwsh.org.sg,,6299-3747,,6299-2406,,705 Serangoon Rd,328127,30891.7285,33285.3934
+18,Ren Ci Community Hospital,0,Community,http://www.renci.org.sg/,,6385-0288,,6385-0900,,71 Irrawaddy Road,329562,29408.7287,33898.9686
+20,St Andrew's Community Hospital,,Community,http://www.sach.org.sg,,6586-1000,,6586-1100,,8 Simei Street 3,529895,40859.2136,35987.9105
+21,St Luke's Hospital,223,Community,http://www.slh.org.sg,,6563-2281,,6561-8205,,2 Bukit Batok Street 11,659674,17857.5528,36857.6626
+22,Adam Road Medical Centre,0,Specialist,http://www.pachealthholdings.com/arh/,6887-3737,6466-7777,,6467-0254,"#01-02, King's Arcade",559 Bukit Timah Road,269695,25485.1446,33939.3989
+23,Institute Of Mental Health (IMH) ,2010,Specialist,http://www.imh.com.sg/,6389-2222,6389-2000,,6385-1050,Buangkok Green Medical Park,10 Buangkok View,539747,33567.7307,40394.7278
+24,Johns Hopkins Singapore International Medical Centre,,Specialist,http://www.imc.jhmi.edu/,,6880-2222,,6880-2223,,11 Jalan Tan Tock Seng,308433,29845.4109,33529.1214
+25,KK Women's And Children's Hospital (KKH),830,Specialist,http://www.kkh.com.sg/,6225-5554,6225-5554,6394-1700,6394-1700,,100 Bukit Timah Road,229899,29483.6696,32528.2623
+26,Mount Elizabeth Hospital,345,Specialist,http://www.mountelizabeth.com.sg/, 6735-5000,6737-2666,,6734 0518,,3 Mount Elizabeth,228510,28239.8211,31970.902
+27,National Cancer Centre Singapore (NCCS),0,Specialist,http://www.nccs.com.sg/,6225 5655,6436-8000,,6225-6283,,11 Hospital Drive,169610,28357.5787,29083.0082
+28,National Dental Centre of Singapore (NDC),0,Specialist,http://www.ndc.com.sg/,,6324-8802,6324-8802,6324-8810,,5 Second Hospital Avenue,168938,28559.5149,29117.4198
+29,National Heart Centre Singapore (NHCS),0,Specialist,http://www.nhcs.com.sg/,,6704-8000,,6844-9030,National Heart Centre,5 Hospital Drive,169609,28311.7144,29004.4666
+30,National Neuroscience Institute (NNI),0,Specialist,http://www.nni.com.sg/,6256-6011,6357-7153,,6256-4755,,11 Jalan Tan Tock Seng,308433,29845.4109,33529.1214
+31,National Skin Centre (NSC),0,Specialist,http://www.nsc.gov.sg/,,6253-4455,,6253-3225,,1 Mandalay Road,308205,29745.9603,33549.3531
+32,Singapore National Eye Centre (SNEC),0,Specialist,http://www.snec.com.sg/, 6532-4865,6227-7255,,6227-7290,,11 Third Hospital Avenue,168751,28269.0961,29280.8662
+33,Thomson Medical Centre (TMC),190,Specialist,http://www.thomsonmedical.com/, 6350-8812,6250-2222,,6253-4468,,339 Thomson Rd,307677,28904.7726,34177.5427
