@@ -109,7 +109,7 @@
         <script src="data/json_NursingHopsitalClusters.js"></script>
         <script src="data/json_ListOfHospitals.js"></script>
 		<script src="data/json_PoPHosptialsBusStops.js"></script>
-
+		<script src="data/json_MP14ResidentialMap.js"></script>
 
         <script>
             var map = L.map('map', {
@@ -255,6 +255,7 @@
 
             layerOrder[layerOrder.length] = cluster_groupNursingHopsitalClustersJSON;
             bounds_group.addLayer(json_NursingHopsitalClustersJSON);
+			//feature_group.addLayer(json_NursingHopsitalClustersJSON);
             raster_group.addTo(map);
             feature_group.addTo(map);
 
@@ -458,6 +459,7 @@
                 pointToLayer: doPointToLayerBusStops
             }).addTo(busStop);
 			
+				
 			L.geoJson(json_PoPHosptialsBusStops, {
                 onEachFeature: pop_PoPHosptialsBusStops,
                 pointToLayer: doPointToLayerBusStops
@@ -484,7 +486,7 @@
             }
 
             function doStyleMP14SUBZONEWEBPL(feature) {
-            if (feature.properties['Population_2016_ELDERLY_60_ABOVE'] >= 0.000000 && feature.properties['Population_2016_ELDERLY_60_ABOVE'] <= 1.000000 ) {
+            if (feature.properties['Population_2016_ELDERLY_60_ABOVE'] >= 0.000000 && feature.properties['Population_2016_ELDERLY_60_ABOVE'] <= 200.000000 ) {
                 return {
                         color: '#000000',
                         weight: '1.04',
@@ -496,7 +498,7 @@
                         fillOpacity: '0.8',
                     }
             }
-            if (feature.properties['Population_2016_ELDERLY_60_ABOVE'] >= 1.000000 && feature.properties['Population_2016_ELDERLY_60_ABOVE'] <= 3560.000000 ) {
+            if (feature.properties['Population_2016_ELDERLY_60_ABOVE'] >= 200.000000 && feature.properties['Population_2016_ELDERLY_60_ABOVE'] <= 3560.000000 ) {
                 return {
                         color: '#000000',
                         weight: '1.04',
@@ -572,9 +574,6 @@
                     fillOpacity: 1
                 });
 
-                /*if (!L.Browser.ie && !L.Browser.opera) {
-                 highlightLayer.bringToFront();
-                 }*/
             }
             L.ImageOverlay.include({
                 getBounds: function () {
@@ -604,6 +603,99 @@
 				layer.bindPopup(popupContent);
 			}
 				
+			function pop_MP14ResidentialMap(feature, layer) {
+			layer.on({
+                mouseout: function(e) {
+                    layer.setStyle(doStyle_MP14ResidentialMap(feature));
+
+                },
+                mouseover: highlightFeature,
+            });
+            var popupContent = '<table>\
+                    <tr>\
+                        <td colspan="2">' + "Subzone Name: " + (feature.properties['SUBZONE_NAME'] !== null ? Autolinker.link(String(feature.properties['SUBZONE_N'])) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + "Area Name: " +  (feature.properties['PLN_AREA_NAME'] !== null ? Autolinker.link(String(feature.properties['PLN_AREA_N'])) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + "Region Name: " +  (feature.properties['REGION_NAME'] !== null ? Autolinker.link(String(feature.properties['REGION_N'])) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + "Total Resident Households: " +  (feature.properties['TOTAL_RESIDENT_HOUSEHOLDS'] !== null ? Autolinker.link(String(feature.properties['Resident_7'])) : '') + '</td>\
+                    </tr>\
+                </table>';
+            layer.bindPopup(popupContent);
+        }
+
+        function doStyle_MP14ResidentialMap(feature) {
+            if (feature.properties['Resident_7'] >= 6690.000000 && feature.properties['Resident_7'] <= 19080.000000 ) {
+                return {
+					color: '#ffffff',
+					weight: '1.04',
+					dashArray: '1,5',
+					lineCap: 'butt',
+					lineJoin: 'miter',
+					fillColor: '#f5ebf5',
+					opacity: '0.8',
+					fillOpacity: '0.8',
+            }
+            }
+            if (feature.properties['Resident_7'] >= 19080.000000 && feature.properties['Resident_7'] <= 31000.000000 ) {
+                return {
+					color: '#ffffff',
+					weight: '1.04',
+					dashArray: '1,5',
+					lineCap: 'butt',
+					lineJoin: 'miter',
+					fillColor: '#ecc7ec',
+					opacity: '0.8',
+					fillOpacity: '0.8',
+            }
+            }
+            if (feature.properties['Resident_7'] >= 31000.000000 && feature.properties['Resident_7'] <= 49400.000000 ) {
+                return {
+					color: '#ffffff',
+					weight: '1.04',
+					dashArray: '1,5',
+					lineCap: 'butt',
+					lineJoin: 'miter',
+					fillColor: '#d395dc',
+					opacity: '0.8',
+					fillOpacity: '0.8',
+            }
+            }
+            if (feature.properties['Resident_7'] >= 49400.000000 && feature.properties['Resident_7'] <= 94260.000000 ) {
+                return {
+					color: '#ffffff',
+					weight: '1.04',
+					dashArray: '1,5',
+					lineCap: 'butt',
+					lineJoin: 'miter',
+					fillColor: '#c158d1',
+					opacity: '0.8',
+					fillOpacity: '0.8',
+            }
+            }
+            if (feature.properties['Resident_7'] >= 94260.000000 && feature.properties['Resident_7'] <= 137060.000000 ) {
+                return {
+					color: '#ffffff',
+					weight: '1.04',
+					dashArray: '1,5',
+					lineCap: 'butt',
+					lineJoin: 'miter',
+					fillColor: '#b624aa',
+					opacity: '0.8',
+					fillOpacity: '0.8',
+            }
+            }
+        }
+		var json_json_MP14ResidentialMapJSON = new L.geoJson(json_MP14ResidentialMap, {
+                onEachFeature: pop_MP14ResidentialMap,
+                style: doStyle_MP14ResidentialMap
+            });	
+
+			// Bus Stops Within 500m Radius				
 			function DoStyle_PoPHosptialsBusStops(feature) {
             if (feature.properties['NUMPOINTS'] >= 0.000000 && feature.properties['NUMPOINTS'] <= 1.000000 ) {
                return {
@@ -679,17 +771,11 @@
                     return L.circleMarker(latlng, DoStyle_PoPHosptialsBusStops(feature))
                 }
             });
-			
-			//layerOrder[layerOrder.length] = json_PoPHosptialsBusStopsJSON;
-			//map.addLayer(json_PoPHosptialsBusStopsJSON);
-            //bounds_group.addLayer(json_PoPHosptialsBusStopsJSON);
-            //raster_group.addTo(map);
-            //feature_group.addTo(map);
 
 			
             //Proportional Symbol Map
             function hospitalPropSize(size) {
-                var radius = size / 50;
+                var radius = size / 40;
                 return {
                     radius: radius,
                     fillColor: "#ebb922",
@@ -727,7 +813,7 @@
 					
 			
 
-            //-------------------------------------------------------------------------BottomRight of Map (Legend)-------------------------------------------------------------------------
+            //------------------------------------------------------------------------- Legends -------------------------------------------------------------------------
             var currentLegend;
 
             //Hospital/NursingHomes Legend 
@@ -773,7 +859,7 @@
 			var populationLegend = L.control({position: 'bottomleft'});
             populationLegend.onAdd = function (map) {
                 var div = L.DomUtil.create('div', 'info legend');
-                div.innerHTML += "<b>Population Chloropleth Legend</b><br/>" +
+                div.innerHTML += "<b>Population Chloropleth (Elderly) Legend</b><br/>" +
                         '<legendStyle style="background:#d5efcf;"></legendStyle>1 - 3000<br/>' +
                         '<legendStyle style="background:#9ed898;"></legendStyle>3000 - 9000<br/>' +
                         '<legendStyle style="background:#74c476;"></legendStyle>9000 - 15000<br/>' +
@@ -784,6 +870,20 @@
 			currentLegend = populationLegend;
             populationLegend.addTo(map);
 			
+			// Residential Chloropleth Legend 
+			var residentialLegend = L.control({position: 'bottomleft'});
+            residentialLegend.onAdd = function (map) {
+                var div = L.DomUtil.create('div', 'info legend');
+                div.innerHTML += "<b>Residential Chloropleth Legend</b><br/>" +
+                        '<legendStyle style="background:#f5ebf5;"></legendStyle>6690 - 19080<br/>' +
+                        '<legendStyle style="background:#ecc7ec;"></legendStyle>19080 - 31000<br/>' +
+                        '<legendStyle style="background:#d395dc;"></legendStyle>31000 - 49400<br/>' +
+                        '<legendStyle style="background:#c158d1;"></legendStyle>49400 - 94260<br/>' +
+                        '<legendStyle style="background:#b624aa;"></legendStyle>94260 - 137060<br/>';
+                return div;
+            };
+						
+			//Heatmap
 			var heatmapDensityLegend = L.control({position: 'bottomleft'});
             heatmapDensityLegend.onAdd = function (map) {
                 var div = L.DomUtil.create('div', 'info legend');
@@ -797,9 +897,7 @@
             };
 			
 			
-
-
-            //-------------------------------------------------------------------------UpperRight of Map (Menus)-------------------------------------------------------------------------
+            //------------------------------------------------------------------------- Menus -------------------------------------------------------------------------
             // Search Bar
             var geocoder = L.control.geocoder('search-MKZrG6M', {position: 'topright'}).addTo(map);
 
@@ -808,6 +906,7 @@
             var baseMaps = {'Black & White': basemap0, 'OSM Standard': basemap1, 'Thunderforest Cycle': basemap2};
             L.control.layers(baseMaps, {'Hospitals & Care Facilities': cluster_groupNursingHopsitalClustersJSON, 'MRT Map': mrtMap, 
 										'Population Chloropleth Map': json_MP14SUBZONEWEBPLJSON, 'Hospital Proportional Area': json_ListOfHospitalsJSON,
+										'Residential Chloropleth Map': json_json_MP14ResidentialMapJSON,
 										'Heatmap Age Density': overlay_HeatmapAgeDensity1, 'Nearby Bus Stops (0.5km)': busStop}, {collapsed: true}).addTo(map);
             map.locate({setView: true, maxZoom: 16});
 
@@ -827,7 +926,10 @@
                 }
 				else if (eventLayer.name === 'Nearby Bus Stops (0.5km)') {
                     this.addControl(busLegend);
-                }				
+                }
+				else if (eventLayer.name === 'Residential Chloropleth Map') {
+                    this.addControl(residentialLegend);
+                }	
             });
 
             //Toggle off legend that belongs to map
@@ -850,6 +952,9 @@
 				else if (eventLayer.name === 'Nearby Bus Stops (0.5km)') {
                     this.removeControl(busLegend);
                 }
+				else if (eventLayer.name === 'Residential Chloropleth Map') {
+                    this.removeControl(residentialLegend);
+                }	
             });
 			
 			
